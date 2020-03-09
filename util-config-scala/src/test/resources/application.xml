@@ -1,0 +1,21 @@
+<xml>
+    <config>
+        <!--    需要额外加载的配置文件，多个以逗号隔开    -->
+        <files>memory-config.properties,log4j2.xml</files>
+    </config>
+    <test>
+        <name>duanxinyuan</name>
+        <age>18</age>
+        <info>
+            <gameinfo>{"name":"英雄联盟","level":"铂金1","registYear":2012,"registTime":"2012-06-06 12:12:12"}</gameinfo>
+            <game>
+                <name>英雄联盟</name>
+                <age>1234</age>
+                <level>铂金1</level>
+                <registYear>2012</registYear>
+                <registTime>2012-06-06 12:12:12</registTime>
+            </game>
+        </info>
+        <registTime>2012-06-06 12:12:12</registTime>
+    </test>
+</xml>

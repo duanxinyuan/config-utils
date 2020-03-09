@@ -1,0 +1,15 @@
+config:
+  files: memory-config.properties,log4j2.xml
+test:
+  age: 18
+  info:
+    game:
+      age: 1234
+      level: 铂金1
+      name: 英雄联盟
+      registTime: '2012-06-06 12:12:12'
+      registYear: 2012
+    gameinfo: '{"name":"英雄联盟","level":"铂金1","registYear":2012,"registTime":"2012-06-06
+            12:12:12"}'
+  name: duanxinyuan
+  registTime: '2012-06-06 12:12:12'
