@@ -73,7 +73,7 @@
         <junit.version>4.12</junit.version>
         <log4j2.version>2.12.1</log4j2.version>
 
-        <commons-configuration2.version>2.6</commons-configuration2.version>
+        <commons-configuration2.version>2.7</commons-configuration2.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
