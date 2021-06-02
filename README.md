@@ -11,13 +11,13 @@
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>util-config</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
 </dependency>
 
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>util-config-scala</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 </dependencies>
 ```
