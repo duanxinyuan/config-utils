@@ -13,3 +13,6 @@ test:
             12:12:12"}'
   name: duanxinyuan
   registTime: '2012-06-06 12:12:12'
+spring:
+  profiles:
+    active: dev1,dev2

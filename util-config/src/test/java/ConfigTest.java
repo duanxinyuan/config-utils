@@ -1,19 +1,22 @@
+import java.text.ParseException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+
 import com.dxy.library.json.jackson.JacksonUtil;
 import com.dxy.library.util.config.ConfigUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.text.ParseException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-
 /**
  * @author duanxinyuan
  * 2018/8/6 12:54
  */
 public class ConfigTest {
+    static {
+        System.setProperty("spring.profiles.active", "dev");
+    }
 
     @Test
     public void test() {
@@ -22,10 +25,10 @@ public class ConfigTest {
         Map<String, Object> yamlMap = ConfigUtils.loadAsMap("application.yaml");
         Map<String, Object> xmlMap = ConfigUtils.loadAsMap("application.xml");
 
-//        System.out.println(JacksonUtil.to(propertiesMap));
-//        System.out.println(JacksonUtil.to(ymlMap));
+        //        System.out.println(JacksonUtil.to(propertiesMap));
+        //        System.out.println(JacksonUtil.to(ymlMap));
         System.out.println(JacksonUtil.to(yamlMap));
-//        System.out.println(JacksonUtil.to(xmlMap));
+        //        System.out.println(JacksonUtil.to(xmlMap));
 
         Assert.assertEquals(propertiesMap.size(), ymlMap.size());
         Assert.assertEquals(propertiesMap.size(), yamlMap.size());
@@ -35,13 +38,15 @@ public class ConfigTest {
             //properties和xml读取出来的值全部是String，yml识别了数据类型
             Assert.assertNotNull(v);
             Assert.assertEquals(v, (ymlMap.get(k) instanceof String) ? ymlMap.get(k) : String.valueOf(ymlMap.get(k)));
-            Assert.assertEquals(v, (yamlMap.get(k) instanceof String) ? yamlMap.get(k) : String.valueOf(yamlMap.get(k)));
+            Assert.assertEquals(v,
+                (yamlMap.get(k) instanceof String) ? yamlMap.get(k) : String.valueOf(yamlMap.get(k)));
             Assert.assertEquals(v, xmlMap.get(k));
         });
     }
 
     @Test
     public void testGet() throws ParseException {
+
         //获取配置
         System.out.println(ConfigUtils.getAsString("test.name"));
         System.out.println(ConfigUtils.get("test.age", Long.class));
@@ -72,10 +77,17 @@ public class ConfigTest {
         Assert.assertNotNull(gameInfo.getRegistTime());
 
         Assert.assertEquals(gameInfo.getName(), ConfigUtils.getAsString("test.info.game.name"));
-        Assert.assertEquals(gameInfo.getAge(), (Integer) ConfigUtils.getAsInt("test.info.game.age"));
+        Assert.assertEquals(gameInfo.getAge(), (Integer)ConfigUtils.getAsInt("test.info.game.age"));
         Assert.assertEquals(gameInfo.getLevel(), ConfigUtils.getAsString("test.info.game.level"));
-        Assert.assertEquals(gameInfo.getRegistYear(), (Integer) ConfigUtils.getAsInt("test.info.game.registYear"));
-        Assert.assertEquals(gameInfo.getRegistTime(), DateUtils.parseDate(Objects.requireNonNull(ConfigUtils.getAsString("test.info.game.registTime")), "yyyy-MM-dd HH:mm:ss"));
+        Assert.assertEquals(gameInfo.getRegistYear(), (Integer)ConfigUtils.getAsInt("test.info.game.registYear"));
+        Assert.assertEquals(gameInfo.getRegistTime(),
+            DateUtils.parseDate(Objects.requireNonNull(ConfigUtils.getAsString("test.info.game.registTime")),
+                "yyyy-MM-dd HH:mm:ss"));
+
+        //Profile
+        Assert.assertEquals(ConfigUtils.getAsString("test.name.dev"), "duanxinyuan");
+        Assert.assertEquals(ConfigUtils.getAsString("test.name.dev1"), "duanxinyuan");
+        Assert.assertEquals(ConfigUtils.getAsString("test.name.dev2"), "duanxinyuan");
     }
 
     @Test

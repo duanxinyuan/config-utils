@@ -18,4 +18,9 @@
         </info>
         <registTime>2012-06-06 12:12:12</registTime>
     </test>
+    <spring>
+        <profiles>
+            <active>dev1,dev2</active>
+        </profiles>
+    </spring>
 </xml>

@@ -1,11 +1,23 @@
 package com.dxy.library.util.config;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.dxy.library.json.jackson.JacksonUtil;
 import com.dxy.library.util.config.dto.Config;
 import com.dxy.library.util.config.exception.ConfigException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.dxy.library.json.jackson.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.XMLConfiguration;
@@ -18,15 +30,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
-
 /**
  * 读取配置文件的工具类
+ *
  * @author duanxinyuan
  * 2018/8/6 12:44
  */
@@ -39,6 +45,22 @@ public class ConfigUtils {
         load("application.properties");
         load("application.yml");
         load("application.yaml");
+        String springActiveProfiles = System.getProperty("spring.profiles.active");
+        if (StringUtils.isNotBlank(springActiveProfiles)) {
+            for (String profile : springActiveProfiles.split(",")) {
+                load("application-" + profile + ".properties");
+                load("application-" + profile + ".yml");
+                load("application-" + profile + ".yaml");
+            }
+        }
+        springActiveProfiles = getAsString("spring.profiles.active");
+        if (StringUtils.isNotBlank(springActiveProfiles)) {
+            for (String profile : springActiveProfiles.split(",")) {
+                load("application-" + profile + ".properties");
+                load("application-" + profile + ".yml");
+                load("application-" + profile + ".yaml");
+            }
+        }
 
         //需要额外加载的配置文件，多个以逗号隔开
         String configFiles = getAsString("config.files");
@@ -85,6 +107,7 @@ public class ConfigUtils {
 
     /**
      * 获取配置
+     *
      * @param key 配置名称
      */
     public static String getAsString(String key) {
@@ -98,6 +121,7 @@ public class ConfigUtils {
 
     /**
      * 获取配置
+     *
      * @param key 配置名称
      */
     public static String getAsString(String key, String defaultValue) {
@@ -111,6 +135,7 @@ public class ConfigUtils {
 
     /**
      * 获取配置
+     *
      * @param key 配置名称
      */
     public static <T> T get(String key, Class<T> type) {
@@ -119,6 +144,7 @@ public class ConfigUtils {
 
     /**
      * 获取配置
+     *
      * @param key 配置名称
      */
     public static <T> T get(String key, Class<T> type, T defaultValue) {
@@ -132,6 +158,7 @@ public class ConfigUtils {
 
     /**
      * 获取配置（以Key为前缀，获取所有符合规则的config）
+     *
      * @param key 配置名称前缀
      */
     public static Config<String> getConfig(String key, String name) {
@@ -140,16 +167,19 @@ public class ConfigUtils {
 
     /**
      * 获取配置（以Key为前缀，获取所有符合规则的config）
+     *
      * @param key 配置名称前缀
      */
     public static <T> Config<T> getConfig(String key, String name, Class<T> type) {
         List<Config<T>> configs = getConfigs(key, type);
-        Optional<Config<T>> configOptional = configs.stream().filter(config -> config.getName().equals(name)).findFirst();
+        Optional<Config<T>> configOptional = configs.stream().filter(config -> config.getName().equals(name))
+            .findFirst();
         return configOptional.orElse(null);
     }
 
     /**
      * 获取配置（以Key为前缀，获取所有符合规则的config）
+     *
      * @param key 配置名称前缀
      */
     public static List<Config<String>> getConfigs(String key) {
@@ -158,6 +188,7 @@ public class ConfigUtils {
 
     /**
      * 获取配置（以Key为前缀，获取所有符合规则的config）
+     *
      * @param key 配置名称前缀
      * @return 所有符合以Key为前缀规则的config
      */
@@ -181,9 +212,9 @@ public class ConfigUtils {
                 } else {
                     if (type == String.class) {
                         if (entryValue instanceof String) {
-                            value = (T) entryValue;
+                            value = (T)entryValue;
                         } else {
-                            value = (T) String.valueOf(entryValue);
+                            value = (T)String.valueOf(entryValue);
                         }
                     } else {
                         value = JacksonUtil.from(String.valueOf(entryValue), type);
@@ -197,12 +228,14 @@ public class ConfigUtils {
 
     /**
      * 获取配置（以Key为前缀，获取所有符合规则的config，转化为对象）
+     *
      * @param key module
      * @param <T> 配置对象类型
      */
     public static <T> T getConfigAsObject(String key, Class<T> type) {
         Properties props = getConfigAsProperties(key);
-        Set<String> propertyNames = props.keySet().stream().filter(Objects::nonNull).map(Object::toString).collect(Collectors.toSet());
+        Set<String> propertyNames = props.keySet().stream().filter(Objects::nonNull).map(Object::toString).collect(
+            Collectors.toSet());
         Map<String, Object> map = Maps.newHashMap();
         propertyNames.forEach(propertyName -> map.put(propertyName, props.get(propertyName)));
         return JacksonUtil.from(JacksonUtil.to(map), type);
@@ -254,6 +287,7 @@ public class ConfigUtils {
 
     /**
      * 加载配置文件
+     *
      * @param name 配置文件名称（支持properties、yaml、yml、xml四种格式的文件）
      */
     public static Properties loadAsProperties(String name) {
@@ -265,6 +299,7 @@ public class ConfigUtils {
 
     /**
      * 加载配置文件到内存中
+     *
      * @param name 配置文件名称（支持properties、yaml、yml、xml四种格式的文件）
      */
     public static void load(String name) {
@@ -276,6 +311,7 @@ public class ConfigUtils {
 
     /**
      * 加载配置文件
+     *
      * @param name 配置文件名称（支持properties、yaml、yml、xml四种格式的文件）
      */
     public static Map<String, Object> loadAsMap(String name) {
@@ -287,8 +323,10 @@ public class ConfigUtils {
         Map<String, Object> hashMap = Maps.newLinkedHashMap();
         try {
             // 设置编码，默认采用的是`ISO-8859-1`，会出现中文乱码
-            FileBasedConfigurationBuilder.setDefaultEncoding(PropertiesConfiguration.class, StandardCharsets.UTF_8.name());
-            FileBasedConfigurationBuilder.setDefaultEncoding(XMLPropertiesConfiguration.class, StandardCharsets.UTF_8.name());
+            FileBasedConfigurationBuilder.setDefaultEncoding(PropertiesConfiguration.class,
+                StandardCharsets.UTF_8.name());
+            FileBasedConfigurationBuilder.setDefaultEncoding(XMLPropertiesConfiguration.class,
+                StandardCharsets.UTF_8.name());
             FileBasedConfigurationBuilder.setDefaultEncoding(YAMLConfiguration.class, StandardCharsets.UTF_8.name());
 
             if (name.endsWith("properties")) {
@@ -317,7 +355,7 @@ public class ConfigUtils {
                         if (key.contains(DefaultExpressionEngineSymbols.DEFAULT_ESCAPED_DELIMITER)) {
                             //yml解析带小数点的Key，会将key值中的小数点替换成两个小数点，这里替换回去
                             key = key.replace(DefaultExpressionEngineSymbols.DEFAULT_ESCAPED_DELIMITER,
-                                    DefaultExpressionEngineSymbols.DEFAULT_PROPERTY_DELIMITER);
+                                DefaultExpressionEngineSymbols.DEFAULT_PROPERTY_DELIMITER);
                         }
                         hashMap.put(key, property);
                     }
