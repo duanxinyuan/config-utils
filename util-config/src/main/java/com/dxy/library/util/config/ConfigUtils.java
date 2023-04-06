@@ -274,7 +274,7 @@ public class ConfigUtils {
      */
     public static Properties getAllConfigAsProperties() {
         Properties result = new Properties();
-        PROPERTIES.forEach(result::put);
+        result.putAll(PROPERTIES);
         return result;
     }
 
@@ -293,7 +293,7 @@ public class ConfigUtils {
     public static Properties loadAsProperties(String name) {
         Map<String, Object> hashMap = loadAsMap(name);
         Properties result = new Properties();
-        hashMap.forEach(result::put);
+        result.putAll(hashMap);
         return result;
     }
 
@@ -331,16 +331,13 @@ public class ConfigUtils {
 
             if (name.endsWith("properties")) {
                 URL resource = getResource(name);
-                if (resource != null) {
-                    File file = new File(resource.getPath());
-                    if (file.exists()) {
-                        PropertiesConfiguration properties = new Configurations().properties(file);
-                        Iterator<String> keys = properties.getKeys();
-                        while (keys.hasNext()) {
-                            String key = keys.next();
-                            Object property = properties.getProperty(key);
-                            hashMap.put(key, property);
-                        }
+                if (null != resource) {
+                    PropertiesConfiguration properties = new Configurations().properties(resource);
+                    Iterator<String> keys = properties.getKeys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        Object property = properties.getProperty(key);
+                        hashMap.put(key, property);
                     }
                 }
             } else if (name.endsWith("yaml") || name.endsWith("yml")) {
@@ -363,15 +360,12 @@ public class ConfigUtils {
             } else if (name.endsWith("xml")) {
                 URL resource = getResource(name);
                 if (resource != null) {
-                    File file = new File(resource.getPath());
-                    if (file.exists()) {
-                        XMLConfiguration configuration = new Configurations().xml(file);
-                        Iterator<String> keys = configuration.getKeys();
-                        while (keys.hasNext()) {
-                            String key = keys.next();
-                            Object property = configuration.getProperty(key);
-                            hashMap.put(key, property);
-                        }
+                    XMLConfiguration configuration = new Configurations().xml(resource);
+                    Iterator<String> keys = configuration.getKeys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        Object property = configuration.getProperty(key);
+                        hashMap.put(key, property);
                     }
                 }
             }
